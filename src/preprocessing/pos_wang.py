@@ -3,7 +3,7 @@ import yaml
 import math
 from scipy import signal
 from pathlib import Path
-from utils import detrend_signal, process_frames
+from .utils import detrend_signal, process_frames
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
 with open(CONFIG_PATH) as f:
@@ -15,7 +15,7 @@ def apply_pos_wang(frames, fs):
     N = RGB.shape[0]
     H = np.zeros((N,))
     win_sec = cfg["signal_processing"]["pos"]["window_sec"]
-    lambda_val = cfg["signal_processing"]["pos"]["window_sec"]
+    lambda_val = cfg["signal_processing"]["pos"]["detrend_lambda"]
     l = math.ceil(win_sec * fs)
 
     for n in range(N):
@@ -27,7 +27,7 @@ def apply_pos_wang(frames, fs):
             h = h - np.mean(h)
             H[m:n] += h
 
-    BVP = detrend_signal(H, lambda_val=lambda_val)
+    BVP = detrend_signal(H, lambda_value=lambda_val)
 
     [lower, upper]= cfg["signal_processing"]["pos"]["bandpass"]
 

@@ -79,5 +79,5 @@ class DatasetLoader:
 
                 video_list.append(video)
                 target_list.append(oxygen)
-        self.video_list = np.ndarray(video_list)
-        self.target_list = np.ndarray(target_list)
+        self.video_list = np.array(video_list)
+        self.target_list = np.array(target_list)

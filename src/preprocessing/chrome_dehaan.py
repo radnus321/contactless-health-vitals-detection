@@ -3,7 +3,7 @@ import yaml
 import math
 from scipy import signal
 from pathlib import Path
-from utils import process_frames
+from .utils import process_frames
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
 with open(CONFIG_PATH) as f:
@@ -12,9 +12,9 @@ with open(CONFIG_PATH) as f:
 
 def apply_chrome_dehaan(frames, FS):
     RGB = process_frames(frames)
-    win_sec = cfg["signal_processing"]["pos"]["window_sec"]
-    order = cfg["signal_processing"]["pos"]["order"]
-    [lower, upper] = cfg["signal_processing"]["pos"]["bandpass"]
+    win_sec = cfg["signal_processing"]["chrome"]["window_sec"]
+    order = cfg["signal_processing"]["chrome"]["order"]
+    [lower, upper] = cfg["signal_processing"]["chrome"]["bandpass"]
     FN = RGB.shape[0]
     NyquistF = 1/2*FS
     B, A = signal.butter(order, [lower/NyquistF, upper/NyquistF], 'bandpass')
