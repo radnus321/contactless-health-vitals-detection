@@ -1,0 +1,25 @@
+general:
+  seed: 42
+  device: cuda
+  output_dir: "results/"
+
+dataset:
+  root_dir: "/home/sundar/projects/contactless-health-vitals-detection/data/"
+  metadata_file: "/home/sundar/projects/contactless-health-vitals-detection/data/ToHealth_RepeatDataSet.xlsx"
+  target_fps: 30
+
+roi_extraction:
+  forehead_landmarks: [151]
+  left_cheek_landmarks: [205]
+  right_cheek_landmarks: [280]
+  roi_size: 64
+
+signal_processing:
+  pos:
+    window_sec: 1.6
+    detrend_lambda: 100
+    bandpass: [0.75, 3.0]
+  chrome:
+    window_sec: 1.6
+    bandpass: [0.7, 2.5]
+    order: 3

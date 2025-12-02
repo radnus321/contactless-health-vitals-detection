@@ -1,13 +1,21 @@
 import numpy as np
+import yaml
 import math
 from scipy import signal
+from pathlib import Path
 from utils import detrend_signal, process_frames
 
+CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
+with open(CONFIG_PATH) as f:
+    cfg = yaml.safe_load(f)
 
-def apply_pos_wang(frames, fs, win_sec=1.6):
+
+def apply_pos_wang(frames, fs):
     RGB = process_frames(frames)
     N = RGB.shape[0]
     H = np.zeros((N,))
+    win_sec = cfg["signal_processing"]["pos"]["window_sec"]
+    lambda_val = cfg["signal_processing"]["pos"]["window_sec"]
     l = math.ceil(win_sec * fs)
 
     for n in range(N):
@@ -19,8 +27,10 @@ def apply_pos_wang(frames, fs, win_sec=1.6):
             h = h - np.mean(h)
             H[m:n] += h
 
-    BVP = detrend_signal(H, lambda_val=100)
+    BVP = detrend_signal(H, lambda_val=lambda_val)
 
-    b, a = signal.butter(1, [0.75/fs*2, 3/fs*2], btype='bandpass')
+    [lower, upper]= cfg["signal_processing"]["pos"]["bandpass"]
+
+    b, a = signal.butter(1, [lower/fs*2, upper/fs*2], btype='bandpass')
     BVP = signal.filtfilt(b, a, BVP.astype(np.double))
     return BVP

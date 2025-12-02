@@ -1,20 +1,25 @@
 import numpy as np
+import yaml
 import math
 from scipy import signal
+from pathlib import Path
 from utils import process_frames
 
+CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
+with open(CONFIG_PATH) as f:
+    cfg = yaml.safe_load(f)
 
-def apply_chrome_dehaan(frames,FS):
-    LPF = 0.7
-    HPF = 2.5
-    WinSec = 1.6
 
+def apply_chrome_dehaan(frames, FS):
     RGB = process_frames(frames)
+    win_sec = cfg["signal_processing"]["pos"]["window_sec"]
+    order = cfg["signal_processing"]["pos"]["order"]
+    [lower, upper] = cfg["signal_processing"]["pos"]["bandpass"]
     FN = RGB.shape[0]
     NyquistF = 1/2*FS
-    B, A = signal.butter(3, [LPF/NyquistF, HPF/NyquistF], 'bandpass')
+    B, A = signal.butter(order, [lower/NyquistF, upper/NyquistF], 'bandpass')
 
-    WinL = math.ceil(WinSec*FS)
+    WinL = math.ceil(win_sec*FS)
     if(WinL % 2):
         WinL = WinL+1
     NWin = math.floor((FN-WinL//2)/(WinL//2))

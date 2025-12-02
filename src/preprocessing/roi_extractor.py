@@ -1,12 +1,18 @@
+import yaml
 import cv2
 import numpy as np
 import mediapipe as mp
+from pathlib import Path
+
+CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
+with open(CONFIG_PATH) as f:
+    cfg = yaml.safe_load(f)
 
 
 class ROIExtractor:
-    def __init__(self, roi_type="forehead", roi_size=64):
+    def __init__(self, roi_type="forehead"):
         self.roi_type = roi_type
-        self.roi_size = 64
+        self.roi_size = cfg["roi_extraction"]["roi_size"]
         self.mp_face_mesh = mp.solutions.face_mesh
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             static_image_mode=False,
@@ -16,9 +22,9 @@ class ROIExtractor:
             min_tracking_confidence=0.5,
         )
         self.landmark_map = {
-                "forehead": [151],
-                "left_cheek": [205],
-                "right_cheek": [280]
+                "forehead": cfg["roi_extraction"]["forehead_landmarks"],
+                "left_cheek": cfg["roi_extraction"]["left_cheek_landmarks"],
+                "right_cheek": cfg["roi_extraction"]["right_cheek_landmarks"]
         }
 
     def detect_landmarks(self, frame):
