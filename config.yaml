@@ -15,6 +15,7 @@ roi_extraction:
   roi_size: 64
 
 signal_processing:
+  methods: ["pos_wang", "chrome_dehaan", "green"]
   pos:
     window_sec: 1.6
     detrend_lambda: 100
@@ -23,3 +24,6 @@ signal_processing:
     window_sec: 1.6
     bandpass: [0.7, 2.5]
     order: 3
+
+model:
+  name: "physnet"

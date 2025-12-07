@@ -1,9 +1,15 @@
 import torch
+import yaml
+from pathlib import Path
 import torch.nn as nn
+
+CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
+with open(CONFIG_PATH) as f:
+    cfg = yaml.safe_load(f)
 
 
 class PhysNet(nn.Module):
-    def __init__(self, in_channels=3):
+    def __init__(self, in_channels=9):
         super(PhysNet, self).__init__()
 
         self.frontend3D = nn.Sequential(
@@ -44,8 +50,11 @@ class PhysNet(nn.Module):
         self.rPPG_head = nn.Conv1d(64, 1, kernel_size=1)
 
     def forward(self, x):
+        print(f"Shape of x is: {x.shape}")
         feats = self.frontend3D(x)
         B, C, T, H2, W2 = feats.shape
+
+        print(f"Dimension is: {B}, {C}, {T}, {H2}, {W2}")
 
         feats = feats.view(B, C, T, -1).mean(-1)
 

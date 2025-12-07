@@ -1,6 +1,6 @@
 import yaml
 from pathlib import Path
-from phys_net import PhysNet
+from .phys_net import PhysNet
 
 CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
 with open(CONFIG_PATH) as f:

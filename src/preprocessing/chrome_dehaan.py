@@ -2,6 +2,7 @@ import numpy as np
 import yaml
 import math
 from scipy import signal
+from scipy.signal import resample
 from pathlib import Path
 from .utils import process_frames
 
@@ -12,6 +13,7 @@ with open(CONFIG_PATH) as f:
 
 def apply_chrome_dehaan(frames, FS):
     RGB = process_frames(frames)
+    FN = RGB.shape[0]
     win_sec = cfg["signal_processing"]["chrome"]["window_sec"]
     order = cfg["signal_processing"]["chrome"]["order"]
     [lower, upper] = cfg["signal_processing"]["chrome"]["bandpass"]
@@ -49,5 +51,7 @@ def apply_chrome_dehaan(frames, FS):
         WinS = WinM
         WinM = WinS+WinL//2
         WinE = WinS+WinL
+    if len(S) != FN:
+        S = resample(S, FN)
     BVP = S
     return BVP
