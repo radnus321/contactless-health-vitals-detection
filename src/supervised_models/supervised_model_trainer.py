@@ -25,7 +25,7 @@ def pearson_loss(preds, target, eps=1e-8):
     return loss.mean()
 
 
-class ModelTrainer:
+class SupervisedModelTrainer:
     def __init__(self, model, cfg=None, optimizer=None, scheduler=None, criterion=None, device=None):
         self.cfg = cfg or {}
         self.device = device or self._get_device_from_cfg()

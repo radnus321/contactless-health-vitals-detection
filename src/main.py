@@ -1,50 +1,54 @@
-# import cv2
-# import numpy as np
-# from dataloader import DatasetLoader
-# from preprocessing.roi_extractor import ROIExtractor
-# from preprocessing.pos_wang import apply_pos_wang
-# from preprocessing.chrome_dehaan import apply_chrome_dehaan
-# from preprocessing.green import apply_green
-# from preprocessing.signal_extractor import extract_signals
-# from preprocessing.signal_extractor import SignalExtractor
-
 from data.dataloader import DatasetLoader
 from data.phys_net_dataset import PhysNetDataset
 from preprocessing.signal_extractor import SignalExtractor
+from evaluation.features.signal_dataset import SignalDataset
 from supervised_models.model_factory import build_model
-from supervised_models.model_trainer import ModelTrainer
-
+from supervised_models.supervised_model_trainer import SupervisedModelTrainer 
+from evaluation.features.raw_extractor import RawExtractor
+from evaluation.model_trainer import ModelTrainer
+from evaluation.models.cnn_regressor_model import CNNRegressor
 from torch.utils.data import DataLoader
+import torch.nn as nn
 import torch
 
 dataloader = DatasetLoader("small_data/", "small_data/ToHealth_RepeatDataSet.xlsx")
-dataloader.create_dataset(num_frames=30)
+dataloader.create_dataset(num_frames=100)
 
 signal_extractor = SignalExtractor()
 signal_extractor.extract_signals(dataloader.video_list, 30)
 
-dataset = PhysNetDataset(
-    target_list=dataloader.target_list,
-    signal_extractor=signal_extractor
-)
+chrome_signal = signal_extractor.chrome_dehaan_signal
+pos_signal = signal_extractor.pos_wang_signal
 
-train_loader = DataLoader(
-    dataset,
-    batch_size=1,
-    shuffle=True,
-    drop_last=True
-)
+model = CNNRegressor(T=len(dataloader.target_list))
 
-model = build_model()
+model_trainer = ModelTrainer(pos_signal[0], dataloader.target_list, model)
+model_trainer.train_model(50, 16, 1e-3, 0.2, True)
 
-trainer = ModelTrainer(
-    model=model
-)
+model_trainer.save_model("cnn_regressor_model.pth")
 
-trainer.fit(
-    train_loader=train_loader,
-    epochs=10,
-)
+# dataset = PhysNetDataset(
+#     target_list=dataloader.target_list,
+#     signal_extractor=signal_extractor
+# )
+#
+# train_loader = DataLoader(
+#     dataset,
+#     batch_size=1,
+#     shuffle=True,
+#     drop_last=True
+# )
+#
+# model = build_model()
+#
+# trainer = SupervisedModelTrainer(
+#     model=model
+# )
+#
+# trainer.fit(
+#     train_loader=train_loader,
+#     epochs=10,
+# )
 
 # features, target = dataset[0]["features"], dataset[0]["target"]
 # print(features.shape)

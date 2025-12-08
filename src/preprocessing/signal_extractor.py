@@ -60,6 +60,10 @@ class SignalExtractor:
             chrome_all.append(chrome_video)
             green_all.append(green_video)
 
-        self.pos_wang_signal = np.array(pos_wang_all)
-        self.chrome_dehaan_signal = np.array(chrome_all)
-        self.green_signal = np.array(green_all)
+        self.pos_wang_signal = np.array(pos_wang_all).transpose(1, 0, 2)
+        self.chrome_dehaan_signal = np.array(chrome_all).transpose(1, 0, 2)
+        self.green_signal = np.array(green_all).transpose(1, 0, 2)
+
+        print("Shape of pos wang", self.pos_wang_signal.shape)
+        print("Shape of chrome dehaan", self.chrome_dehaan_signal.shape)
+        print("Shape of green", self.green_signal.shape)
